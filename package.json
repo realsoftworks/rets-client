@@ -1,7 +1,10 @@
 {
-  "name": "rets-client",
+  "name": "@realsoftworks/rets-client",
   "version": "5.2.4",
   "description": "A RETS client (Real Estate Transaction Standard).",
+  "publishConfig": {
+    "access": "restricted"
+  },
   "main": "index.js",
   "typings": "dts/index.ts",
   "dependencies": {
@@ -10,7 +13,7 @@
     "bufferstream": "^0.6.2",
     "debug": "^2.2.0",
     "formidable": "~1.1.1",
-    "node-expat": "^2.3.10",
+    "node-expat": "^2.4.1",
     "request": "^2.55.0",
     "request-debug": "^0.2.0",
     "stream-buffers": "~0.2.5",
@@ -24,8 +27,8 @@
     "coffeescript": "^1.8.0",
     "mocha": "^3.5.3",
     "source-map-support": "^0.4.18",
-    "ts-node": "^3.3.0",
-    "typescript": "^2.5.3"
+    "ts-node": "^10.9.2",
+    "typescript": "^5.4.5"
   },
   "files": [
     "dist",
@@ -35,12 +38,11 @@
   "scripts": {
     "pretest": "coffee --compile --output dist/ lib/ && tsc --noEmit",
     "test": "node_modules/mocha/bin/_mocha --compilers ts-node/register test/*.ts",
-    "prepare": "npm run test",
     "dev": "coffee --watch --output dist lib/"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/zacronos/rets-client.git"
+    "url": "https://github.com/realsoftworks/rets-client.git"
   },
   "keywords": [
     "rets",
@@ -59,10 +61,11 @@
   "author": "Joe Ibershoff <joe@ibershoff.com>",
   "contributors": [
     "Joe Ibershoff <joe@ibershoff.com>",
-    "Steve Bruno <stevenrbruno@icloud.com>"
+    "Steve Bruno <stevenrbruno@icloud.com>",
+    "Arlen Anderson <arlen@propelio.com>"
   ],
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/zacronos/rets-client/issues"
+    "url": "https://github.com/realsoftworks/rets-client/issues"
   }
 }
