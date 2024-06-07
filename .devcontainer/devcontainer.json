@@ -1,0 +1,45 @@
+// For format details, see https://aka.ms/devcontainer.json. For config options, see the README at:
+// https://github.com/microsoft/vscode-dev-containers/tree/v0.231.5/containers/docker-existing-docker-compose
+// If you want to run as a non-root user in the container, see .devcontainer/docker-compose.yml.
+{
+  "name": "rets-client",
+
+  "dockerComposeFile": [
+    "./docker-compose.yml"
+  ],
+  "service": "devcontainer",
+
+  "forwardPorts": [],
+
+  "workspaceFolder": "/var/lib/rets-client",
+  "customizations": {
+    "vscode": {
+      // Set *default* container specific settings.json values on container create.
+      "settings": {
+        "terminal.integrated.profiles.linux": {
+          "sh": {
+            "path": "/bin/sh"
+          }
+        }
+      },
+      // Add the IDs of extensions you want installed when the container is created.
+      "extensions": [
+        "dbaeumer.vscode-eslint",
+        "esbenp.prettier-vscode",
+        "jasonnutter.vscode-codeowners",
+        "ms-azuretools.vscode-docker"
+      ]
+    }
+  },
+  "overrideCommand": true,
+  // Use 'forwardPorts' to make a list of ports inside the container available locally.
+  // "forwardPorts": [],
+  // Uncomment the next line if you want start specific services in your Docker Compose config.
+  // "runServices": [],
+  // Uncomment the next line if you want to keep your containers running after VS Code shuts down.
+  // "shutdownAction": "none",
+  // Uncomment the next line to run commands after the container is created - for example installing curl.
+  "postCreateCommand": "npm ci",
+  // Uncomment to connect as a non-root user if you've added one. See https://aka.ms/vscode-remote/containers/non-root.
+  "remoteUser": "node"
+}

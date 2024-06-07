@@ -1,0 +1,8 @@
+version: '3.4'
+services:
+  devcontainer:
+    build:
+      context: ./
+      target: devcontainer
+    volumes:
+      - ../:/var/lib/rets-client
