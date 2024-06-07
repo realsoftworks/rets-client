@@ -1,6 +1,6 @@
 /// <reference types="node" />
 
-import { IDictionaryLike,  } from './client'
+import { IObjectHeaderInfo } from './client'
 
 export interface IClientObjects {
   stream: {
@@ -85,20 +85,6 @@ export interface IObjectsStreamDataStreamEvent
   type: 'dataStream';
   dataStream: NodeJS.ReadableStream;
   headerInfo: IObjectHeaderInfo;
-}
-export interface IObjectHeaderInfo {
-  contentId: string;
-  objectId: string;
-  contentType: string;
-  /**
-   * Present with Location=1 GetObject requests
-   */
-  location?: string;
-  contentDescription?: string;
-  /**
-   * CAML-case dictionary of extra headerInfo metadata
-   */
-  objectData?: IDictionaryLike<string>;
 }
 export interface IObjectsStreamErrorEvent extends IObjectsStreamEvent {
   type: 'error';
