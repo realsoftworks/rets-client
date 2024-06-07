@@ -1,6 +1,6 @@
 {
   "name": "@realsoftworks/rets-client",
-  "version": "5.2.5",
+  "version": "5.2.6",
   "description": "A RETS client (Real Estate Transaction Standard).",
   "publishConfig": {
     "access": "restricted"
