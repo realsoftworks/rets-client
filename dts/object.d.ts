@@ -3,21 +3,27 @@
 import { IDictionaryLike,  } from './client'
 
 export interface IClientObjects {
-    stream: {
-      getObjects (
-        resourceType: string,
-        objectType: string,
-        query: string,
-        ids?: ObjectIds,
-        options?: IGetObjectOptions): Promise<IObjectsStreamGetObjectsResponse>
-      getAllObjects (
-        resourceType: string,
-        objectType: string,
-        ids?: ObjectIds,
-        options?: IGetObjectOptions): Promise<IObjectsStreamGetObjectsResponse>
-
-    }
-    getAllObjects (resourceType: string, objectType: string, ids?: ObjectIds, options?: IGetObjectOptions): Promise<IGetAllObjectsResponse>
+  stream: {
+    getObjects(
+      resourceType: string,
+      objectType: string,
+      query: string,
+      ids?: ObjectIds,
+      options?: IGetObjectOptions
+    ): Promise<IObjectsStreamGetObjectsResponse>;
+    getAllObjects(
+      resourceType: string,
+      objectType: string,
+      ids?: ObjectIds,
+      options?: IGetObjectOptions
+    ): Promise<IObjectsStreamGetObjectsResponse>;
+  };
+  getAllObjects(
+    resourceType: string,
+    objectType: string,
+    ids?: ObjectIds,
+    options?: IGetObjectOptions
+  ): Promise<IGetAllObjectsResponse>;
 }
 /**
  * https://github.com/sbruno81/rets-client/blob/master/lib/clientModules/object.coffee#L66
@@ -30,12 +36,12 @@ export interface IGetObjectOptions {
    * results more consistent.  However, if you know you are only making requests that return a single result,
    * it is probably more intuitive to leave this false/unset
    */
-  alwaysGroupObjects: boolean
+  alwaysGroupObjects: boolean;
   /*
-   *        Location: can be 0 (default) or 1 a 1 value requests URLs be returned instead of actual image data, but the
-   *           RETS server may ignore this
-   */
-  Location?: number
+    *        Location: can be 0 (default) or 1 a 1 value requests URLs be returned instead of actual image data, but the
+    *           RETS server may ignore this
+    */
+  Location?: number;
   /**
    *           ObjectData: can be null (default), a string to be used directly as the ObjectData argument, or an array of
    *           values to be joined with commas.  Requests that the server sets headers containing additional metadata
@@ -43,64 +49,66 @@ export interface IGetObjectOptions {
    *           set based on this argument will be parsed into a special object and set as the field 'objectData' in the
    *           headerInfo object.
    */
-  ObjectData?: string | string[]
+  ObjectData?: string | string[];
 }
-export type ObjectIds = string[] | string | Object
+export type ObjectIds = string[] | string | object;
 export interface IObjectData {
-  headerInfo: IObjectHeaderInfo
+  data?: Buffer;
+  headerInfo: IObjectHeaderInfo;
 }
 export interface IObjectsStreamGetObjectsResponse {
-  objectStream: IObjectsStream
-  dataStream: NodeJS.ReadableStream
+  objectStream: IObjectsStream;
+  dataStream: NodeJS.ReadableStream;
 }
 
 export interface IObjectsStream extends NodeJS.ReadableStream {
-  on (event: 'data', callback: (event: IObjectsStreamEvent | IObjectsStreamErrorEvent | IObjectsStreamDataStreamEvent | IObjectsStreamHeaderInfoEvent) => void): this
-  on (event: 'error', callback: (error: any) => void): this
-  on (event: 'end', callback: () => void): this
+  on(
+    event: 'data',
+    callback: (
+      event:
+        | IObjectsStreamEvent
+        | IObjectsStreamErrorEvent
+        | IObjectsStreamDataStreamEvent
+        | IObjectsStreamHeaderInfoEvent
+    ) => void
+  ): this;
+  on(event: 'error', callback: (error: any) => void): this;
+  on(event: 'end', callback: () => void): this;
 }
 
 export interface IObjectsStreamEvent {
-  type: 'headerInfo' | 'error' | 'dataStream'
+  type: 'headerInfo' | 'error' | 'dataStream';
 }
-export interface IObjectsStreamDataStreamEvent extends IObjectsStreamEvent, IObjectData {
-  type: 'dataStream'
-  dataStream: NodeJS.ReadableStream
-  headerInfo: IObjectHeaderInfo
+export interface IObjectsStreamDataStreamEvent
+  extends IObjectsStreamEvent,
+    IObjectData {
+  type: 'dataStream';
+  dataStream: NodeJS.ReadableStream;
+  headerInfo: IObjectHeaderInfo;
 }
 export interface IObjectHeaderInfo {
-  contentId: string
-  objectId: string
-  contentType: string
+  contentId: string;
+  objectId: string;
+  contentType: string;
   /**
    * Present with Location=1 GetObject requests
    */
-  location?: string
-  contentDescription?: string
+  location?: string;
+  contentDescription?: string;
   /**
    * CAML-case dictionary of extra headerInfo metadata
    */
-  objectData?: IDictionaryLike<string>
+  objectData?: IDictionaryLike<string>;
 }
 export interface IObjectsStreamErrorEvent extends IObjectsStreamEvent {
-  type: 'error'
-  error: any
+  type: 'error';
+  error: any;
 }
 export interface IObjectsStreamHeaderInfoEvent extends IObjectsStreamEvent {
-  type: 'headerInfo'
-  headerInfo: IObjectHeaderInfo
-}
-
-export interface IObjectsStreamErrorEvent extends IObjectsStreamEvent {
-  type: 'error'
-  error: any
-}
-
-export interface IObjectsStreamHeaderInfoEvent extends IObjectsStreamEvent {
-  type: 'headerInfo'
-  headerInfo: IObjectHeaderInfo
+  type: 'headerInfo';
+  headerInfo: IObjectHeaderInfo;
 }
 
 export interface IGetAllObjectsResponse {
-  objects: IObjectData[]
+  objects: IObjectData[];
 }

@@ -1,27 +1,33 @@
-import { IHeaderInfo, IGetResourcesResponse, IGetClassResponse, IGetTableResponse } from './client'
+import { IHeaderInfo, IGetResourcesResponse, IGetClassResponse, IGetTableResponse, IGetObjectResponse } from './client'
 
 export interface IClientMetadata {
-  getResources (): Promise<IGetResourcesResponse>
+  getResources(): Promise<IGetResourcesResponse>;
   /** METADATA-CLASS */
-  getClass (resourceId: string): Promise<IGetClassResponse>
+  getClass(resourceId: string): Promise<IGetClassResponse>;
+
+  getObject(resourceId: string): Promise<IGetObjectResponse>;
   /** METADATA-TABLE */
-  getTable (resourceId: string, classId: string): Promise<IGetTableResponse>
+  getTable(resourceId: string, classId: string): Promise<IGetTableResponse>;
   /** METADATA-LOOKUP */
 
-  getLookups (resourceId: string, classId: string): Promise<IGetTableResponse>
+  getLookups(
+    resourceId: string,
+    classId?: string
+  ): Promise<IGetTableResponse>;
   /** METADATA-LOOKUP_TYPE */
 
-  getLookupTypes (resourceId: string, field: string): Promise<IGetTableResponse>
+  getLookupTypes(
+    resourceId: string,
+    field: string
+  ): Promise<IGetTableResponse>;
 
-  getAllClass (): Promise<IGetTableResponse>
+  getAllClass(): Promise<IGetTableResponse>;
 
-  getAllTable (): Promise<IGetTableResponse>
+  getAllTable(): Promise<IGetTableResponse>;
 
-  getAllClass (): Promise<IGetTableResponse>
+  getAllLookups(): Promise<IGetTableResponse>;
 
-  getAllLookups (): Promise<IGetTableResponse>
-
-  getAllLookupTypes (): Promise<MetadataLookupTypes>
+  getAllLookupTypes(): Promise<MetadataLookupTypes>;
 }
 
 interface MetadataLookupTypes {
