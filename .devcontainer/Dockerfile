@@ -1,4 +1,4 @@
-FROM node:20-bullseye as devcontainer
+FROM node:20-bookworm as devcontainer
 
 ENV APP_HOME /var/lib/rets-client
 
@@ -16,6 +16,6 @@ RUN apt-get update \
   openssl \
   python3
 
-RUN npm install -g coffeescript@^1.8.0
+RUN npm install -g coffeescript@^1.8.0 @anthropic-ai/claude-code
 
 CMD ["npm", "run", "build"]

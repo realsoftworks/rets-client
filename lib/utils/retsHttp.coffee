@@ -4,7 +4,7 @@
 
 Promise = require('bluebird')
 debug = require('debug')('rets-client:main')
-expat = require('node-expat')
+sax = require('sax')
 
 errors = require('./errors')
 headersHelper = require('./headers')

@@ -2,7 +2,7 @@
 ### jshint -W097 ###
 'use strict'
 
-expat = require('node-expat')
+sax = require('sax')
 through2 = require('through2')
 
 errors = require('./errors')
@@ -21,27 +21,27 @@ headersHelper = require('./headers')
 getSimpleParser = (retsContext, errCallback, parserEncoding='UTF-8') ->
   result =
     currElementName: null
-    parser: new expat.Parser(parserEncoding)
+    parser: sax.createStream(true, {trim: false, normalize: false})
     finish: () ->
       result.parser.removeAllListeners()
     status: null
 
-  result.parser.once 'startElement', (name, attrs) ->
-    if name != 'RETS'
+  result.parser.once 'opentag', (node) ->
+    if node.name != 'RETS'
       result.finish()
       errCallback(new errors.RetsProcessingError(retsContext, 'Unexpected results. Please check the RETS URL.'))
 
-  result.parser.on 'startElement', (name, attrs) ->
-    result.currElementName = name
-    if name != 'RETS' && name != 'RETS-STATUS'
+  result.parser.on 'opentag', (node) ->
+    result.currElementName = node.name
+    if node.name != 'RETS' && node.name != 'RETS-STATUS'
       return
     result.status =
-      replyCode: attrs.ReplyCode
-      replyTag: replyCodes.tagMap[attrs.ReplyCode]
-      replyText: attrs.ReplyText
-    if attrs.ReplyCode != '0' && attrs.ReplyCode != '20208'
+      replyCode: node.attributes.ReplyCode
+      replyTag: replyCodes.tagMap[node.attributes.ReplyCode]
+      replyText: node.attributes.ReplyText
+    if node.attributes.ReplyCode != '0' && node.attributes.ReplyCode != '20208'
       result.finish()
-      errCallback(new errors.RetsReplyError(retsContext, attrs.ReplyCode, attrs.ReplyText))
+      errCallback(new errors.RetsReplyError(retsContext, node.attributes.ReplyCode, node.attributes.ReplyText))
 
   result.parser.on 'error', (err) ->
     result.finish()
@@ -72,7 +72,7 @@ getStreamParser = (retsContext, metadataTag, rawData, parserEncoding='UTF-8') ->
   currElementName = null
   headers = null
 
-  parser = new expat.Parser(parserEncoding)
+  parser = sax.createStream(true, {trim: false, normalize: false})
   retsStream = through2.obj()
   finish = (type, payload) ->
     parser.removeAllListeners()
@@ -95,35 +95,35 @@ getStreamParser = (retsContext, metadataTag, rawData, parserEncoding='UTF-8') ->
       replyText: attrs.ReplyText
     writeOutput('status', status)
 
-  parser.once 'startElement', (name, attrs) ->
-    if name != 'RETS'
+  parser.once 'opentag', (node) ->
+    if node.name != 'RETS'
       return errorHandler(new errors.RetsProcessingError(retsContext, 'Unexpected results. Please check the RETS URL.'))
-    processStatus(attrs)
+    processStatus(node.attributes)
     if !retsStream.writable
       # assume processStatus found a non-zero/20208 error code and ended the stream  So, we don't want to add the startElement listener.
       return
-    parser.on 'startElement', (name, attrs) ->
-      currElementName = name
-      switch name
+    parser.on 'opentag', (node) ->
+      currElementName = node.name
+      switch node.name
         when 'DATA'
           dataText = ''
         when 'COLUMNS'
           columnText = ''
         when metadataTag
-          writeOutput('metadataStart', attrs)
+          writeOutput('metadataStart', node.attributes)
           result.rowsReceived = 0
         when 'COUNT'
           ### Ignore count write when stream ended due to NO_RECORDS_FOUND (20201) error. ###
-          if !retsStream.writable && parseInt(attrs.Records) == 0
+          if !retsStream.writable && parseInt(node.attributes.Records) == 0
             return false
-          writeOutput('count', parseInt(attrs.Records))
+          writeOutput('count', parseInt(node.attributes.Records))
         when 'MAXROWS'
           result.maxRowsExceeded = true
         when 'DELIMITER'
-          delimiter = hex2a(attrs.value)
+          delimiter = hex2a(node.attributes.value)
           writeOutput('delimiter', delimiter)
         when 'RETS-STATUS'
-          processStatus(attrs)
+          processStatus(node.attributes)
 
   parser.on 'text', (text) ->
     switch currElementName
@@ -133,7 +133,7 @@ getStreamParser = (retsContext, metadataTag, rawData, parserEncoding='UTF-8') ->
         columnText += text
 
   if rawData
-    parser.on 'endElement', (name) ->
+    parser.on 'closetag', (name) ->
       currElementName = null
       switch name
         when 'DATA'
@@ -144,7 +144,7 @@ getStreamParser = (retsContext, metadataTag, rawData, parserEncoding='UTF-8') ->
         when 'RETS'
           finish('done', result)
   else
-    parser.on 'endElement', (name) ->
+    parser.on 'closetag', (name) ->
       currElementName = null
       switch name
         when 'DATA'

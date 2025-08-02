@@ -13,9 +13,9 @@
     "bufferstream": "^0.6.2",
     "debug": "^2.2.0",
     "formidable": "~1.1.1",
-    "node-expat": "^2.4.1",
     "request": "^2.55.0",
     "request-debug": "^0.2.0",
+    "sax": "^1.4.1",
     "stream-buffers": "~0.2.5",
     "through2": "^2.0.0"
   },
