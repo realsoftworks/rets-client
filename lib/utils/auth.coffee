@@ -43,7 +43,7 @@ login = (retsSession, client) ->
         if split.length > 1
           systemData[split[0].trim()] = split[1].trim()
 
-    retsParser.parser.on 'endElement', (name) ->
+    retsParser.parser.on 'closetag', (name) ->
       if name != 'RETS'
         return
       retsParser.finish()

@@ -97,7 +97,7 @@ getSystem = () ->
       if retsParser.currElementName == 'COMMENTS'
         comment += text
 
-    retsParser.parser.on 'endElement', (name) ->
+    retsParser.parser.on 'closetag', (name) ->
       if name == 'COMMENTS'
         comment = comment.trim()
         if comment.length > 0

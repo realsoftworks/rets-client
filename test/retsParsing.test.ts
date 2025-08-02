@@ -6,6 +6,43 @@ const errors = require('../dist/utils/errors');
 
 describe('retsParsing', () => {
   describe('getSimpleParser', () => {
+    it('should handle complete XML without error on stream end', (done) => {
+      const retsContext = { retsMethod: 'login' };
+      let errorCalled = false;
+      let errorMessage = '';
+      
+      const parser = retsParsing.getSimpleParser(retsContext, (err: any) => {
+        errorCalled = true;
+        errorMessage = err.message;
+      });
+      
+      // Simulate what auth.coffee does
+      parser.parser.on('closetag', (name: string) => {
+        if (name === 'RETS') {
+          parser.finish();
+        }
+      });
+      
+      // Simulate a complete login response
+      parser.parser.write('<RETS ReplyCode="0" ReplyText="Success">');
+      parser.parser.write('<RETS-RESPONSE>');
+      parser.parser.write('MemberName=TestUser');
+      parser.parser.write('</RETS-RESPONSE>');
+      parser.parser.write('</RETS>');
+      parser.parser.end();
+      
+      // Give it a moment to process
+      setTimeout(() => {
+        if (errorCalled) {
+          console.log('Error was called with:', errorMessage);
+        }
+        expect(errorCalled).to.be.false;
+        expect(parser.status).to.exist;
+        expect(parser.status.replyCode).to.equal('0');
+        done();
+      }, 10);
+    });
+    
     it('should parse valid RETS response', (done) => {
       const retsContext = { retsMethod: 'test' };
       let errorCalled = false;

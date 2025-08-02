@@ -23,8 +23,10 @@ getSimpleParser = (retsContext, errCallback, parserEncoding='UTF-8') ->
     currElementName: null
     parser: sax.createStream(true, {trim: false, normalize: false})
     finish: () ->
+      result.finished = true
       result.parser.removeAllListeners()
     status: null
+    finished: false
 
   result.parser.once 'opentag', (node) ->
     if node.name != 'RETS'
@@ -48,8 +50,9 @@ getSimpleParser = (retsContext, errCallback, parserEncoding='UTF-8') ->
     errCallback(new errors.RetsProcessingError(retsContext, "XML parsing error: #{errors.getErrorMessage(err)}"))
 
   result.parser.on 'end', () ->
-    result.finish()
-    errCallback(new errors.RetsProcessingError(retsContext, "Unexpected end of xml stream."))
+    if !result.finished
+      result.finish()
+      errCallback(new errors.RetsProcessingError(retsContext, "Unexpected end of xml stream."))
 
   result
 
@@ -74,7 +77,9 @@ getStreamParser = (retsContext, metadataTag, rawData, parserEncoding='UTF-8') ->
 
   parser = sax.createStream(true, {trim: false, normalize: false})
   retsStream = through2.obj()
+  finished = false
   finish = (type, payload) ->
+    finished = true
     parser.removeAllListeners()
     # ignore errors after this point
     parser.on('error', () -> ### noop ###)
@@ -176,7 +181,9 @@ getStreamParser = (retsContext, metadataTag, rawData, parserEncoding='UTF-8') ->
   
   parser.on 'end', () ->
     # we remove event listeners upon success, so getting here implies failure
-    errorHandler(new errors.RetsProcessingError(retsContext, "Unexpected end of xml stream."))
+    # but sax fires end event normally, so check if we haven't finished yet
+    if !finished
+      errorHandler(new errors.RetsProcessingError(retsContext, "Unexpected end of xml stream."))
 
   retsContext.parser = parser
   retsContext.errorHandler = errorHandler
